@@ -6,8 +6,7 @@ import bddmanager.sql.tables.TableSerie;
 import bddmanager.sql.tables.TableStudy;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 // TODO : Make some classes to store retrieved tables
 public class Database {
@@ -71,21 +70,52 @@ public class Database {
         return this.m_database;
     }
 
-    public List<TableDatabase> retrieveAllDB() {
-        String sql = "SELECT * FROM DB;";
-        List<TableDatabase> databases = new ArrayList<>();
+    public List<LinkedHashMap<String, String>> retrieveAllEntries(String table) {
+
+        String sql = "SELECT * FROM ";
+        switch(table) {
+            case "DB" :
+                sql += "DB;";
+                break;
+            case "STUDY" :
+                sql += "STUDY;";
+                break;
+            case "SERIES" :
+                sql += "SERIES;";
+                break;
+            case "JUNCTION" :
+                sql += "JUNCTION;";
+                break;
+        }
+        List<LinkedHashMap<String, String>> entries = new ArrayList<>();
         try {
             // create statement
             Statement st = m_con.createStatement();
+            ResultSet result = st.executeQuery(sql);
 
-            for (int i = 0; i < st.getFetchSize(); i++) {
-                ResultSet result = st.executeQuery(sql);
-                this.m_database.callback(result);
-                databases.add(this.m_database);
+            while(result.next()) {
+                switch(table) {
+                    case "DB" :
+                        this.m_database.callback(result);
+                        entries.add(new LinkedHashMap<>(m_database.getEntry()));
+                        break;
+                    case "STUDY" :
+                        this.m_study.callback(result);
+                        entries.add(new LinkedHashMap<>(m_study.getEntry()));
+                        break;
+                    case "SERIES" :
+                        this.m_serie.callback(result);
+                        entries.add(new LinkedHashMap<>(m_serie.getEntry()));
+                        break;
+                    case "JUNCTION" :
+                        this.m_junction.callback(result);
+                        entries.add(new LinkedHashMap<>(m_junction.getEntry()));
+                        break;
+                }
             }
         } catch (SQLException ex) {
             System.err.println("error : " + ex);
         }
-        return databases;
+        return entries;
     }
 }

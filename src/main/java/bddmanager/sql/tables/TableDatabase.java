@@ -3,17 +3,18 @@ package bddmanager.sql.tables;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class TableDatabase implements Table{
 
-    private Map<String, String> m_entry;
+    private LinkedHashMap<String, String> m_entry;
 
     public TableDatabase() {
-        this.m_entry = new HashMap<>();
+        this.m_entry = new LinkedHashMap<>();
     }
 
-    public Map<String, String> getEntry() {
+    public LinkedHashMap<String, String> getEntry() {
         return m_entry;
     }
 
@@ -23,7 +24,7 @@ public class TableDatabase implements Table{
 
     public int callback(ResultSet result) {
         try {
-                this.m_entry.put("ID", result.getString(0));
+                this.m_entry.put("ID", result.getString(1));
                 this.m_entry.put("DB_NAME", result.getString(2));
                 this.m_entry.put("DB_VERSION", result.getString(3));
                 this.m_entry.put("DB_COMMENT", result.getString(4));
